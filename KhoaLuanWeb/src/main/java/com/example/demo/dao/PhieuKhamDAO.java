@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.dao;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import com.example.demo.enity.PhieuKhambenh;
 
 
 @Repository
-public class PhieuKhamService {
+public class PhieuKhamDAO {
 
 	static String URL="http://localhost:5001";
 	

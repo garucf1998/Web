@@ -8,15 +8,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.dao.TaiKhoanDAO;
 import com.example.demo.enity.TaiKhoan;
-import com.example.demo.service.TaiKhoanService;
 
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService{
 	
 	@Autowired
-	private TaiKhoanService taikhoanservice;
+	private TaiKhoanDAO taikhoanservice;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{

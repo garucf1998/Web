@@ -35,13 +35,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.security.CustomUserDetails;
-import com.example.demo.service.BenhNhanService;
-import com.example.demo.service.ChiTietDonThuocService;
-import com.example.demo.service.LichHenService;
-import com.example.demo.service.NhanVienService;
-import com.example.demo.service.PhieuKhamService;
-import com.example.demo.service.TaiKhoanService;
-
+import com.example.demo.dao.BenhNhanDAO;
+import com.example.demo.dao.ChiTietDonThuocDAO;
+import com.example.demo.dao.LichHenDAO;
+import com.example.demo.dao.NhanVienDAO;
+import com.example.demo.dao.PhieuKhamDAO;
+import com.example.demo.dao.TaiKhoanDAO;
 import com.example.demo.enity.BenhNhan;
 import com.example.demo.enity.ChiTietDonThuoc;
 import com.example.demo.enity.LichHen;
@@ -53,17 +52,17 @@ import com.example.demo.enity.TaiKhoan;
 @Controller
 public class MyController {
 	@Autowired
-	TaiKhoanService taikhoanservice;
+	TaiKhoanDAO taikhoanDao;
 	@Autowired
-	BenhNhanService benhnhanservice;
+	BenhNhanDAO benhnhanDao;
 	@Autowired
-	NhanVienService nhanvienservice;
+	NhanVienDAO nhanvienDao;
 	@Autowired
-	LichHenService lichhenservice;
+	LichHenDAO lichhenDao;
 	@Autowired
-	PhieuKhamService phieukhamservice;
+	PhieuKhamDAO phieukhamDao;
 	@Autowired
-	ChiTietDonThuocService chitietdonthuocservice;
+	ChiTietDonThuocDAO chitietdonthuocDao;
 	@Autowired
 	public JavaMailSender javaMailSender;
 
@@ -72,7 +71,6 @@ public class MyController {
 		if (principal != null) {
 			System.out.println(principal.getName());
 		}
-		Object principal1 = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
 		
 		if (principal != null) {
@@ -80,9 +78,9 @@ public class MyController {
 			model.addAttribute("us", username);
 			try {
 				model.addAttribute("chucvu",
-						benhnhanservice.GetOneBenhNhanByUser(username).getTaiKhoan().getRole().getName());
+						benhnhanDao.GetOneBenhNhanByUser(username).getTaiKhoan().getRole().getName());
 				model.addAttribute("name",
-						benhnhanservice.GetOneBenhNhanByUser(username).getTen());
+						benhnhanDao.GetOneBenhNhanByUser(username).getTen());
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -90,7 +88,7 @@ public class MyController {
 			// System.out.println("username là :" + username);
 			try {
 				System.out.println("Tên Chức Danh :"
-						+ benhnhanservice.GetOneBenhNhanByUser(username).getTaiKhoan().getRole().getName());
+						+ benhnhanDao.GetOneBenhNhanByUser(username).getTaiKhoan().getRole().getName());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -119,11 +117,11 @@ public class MyController {
 			RedirectAttributes redirectAttributes) throws IOException {
 
 		TaiKhoan tk = new TaiKhoan();
-		tk = taikhoanservice.GetOneTaiKhoan(principal.getName());
+		tk = taikhoanDao.GetOneTaiKhoan(principal.getName());
 		if (tk.getPassword().equals(matkhaucu)) {
 			if (matkhaumoi.equals(nhaplaimatkhau)) {
 				tk.setPassword(matkhaumoi);
-				taikhoanservice.UpdateTK(tk);
+				taikhoanDao.UpdateTK(tk);
 			} else {
 				redirectAttributes.addFlashAttribute("thatbai",
 						"Đổi mật khẩu thất bại!- Mật khẩu mới không giống với xác nhận mật khẩu");
@@ -140,7 +138,6 @@ public class MyController {
 	@GetMapping(value = "/dang-nhap")
 	public String showSignIn(HttpSession session, Model model) {
 
-		TaiKhoan taiKhoan = new TaiKhoan();
 		model.addAttribute("taiKhoan", new TaiKhoan());
 		if (session.getAttribute("username") != null) {
 			session.invalidate();
@@ -151,11 +148,10 @@ public class MyController {
 
 	@GetMapping("/thong-tin")
 	public String thongTinCaNhan(Principal principal, Model model) {
-		Object principal1 = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 		BenhNhan bn = new BenhNhan();
 		try {
-			bn = benhnhanservice.GetOneBenhNhanByUser(principal.getName());
+			bn = benhnhanDao.GetOneBenhNhanByUser(principal.getName());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -166,7 +162,7 @@ public class MyController {
 		model.addAttribute("benhnhan", bn);
 		List<LichHen> lichHen = new ArrayList<LichHen>();
 		try {
-			lichHen = lichhenservice.GetAllLichHenByBenhNhan(bn.getId());
+			lichHen = lichhenDao.GetAllLichHenByBenhNhan(bn.getId());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -176,7 +172,7 @@ public class MyController {
 		
 		List<PhieuKhambenh> dsphieukham = new ArrayList<PhieuKhambenh>();
 		try {
-			dsphieukham= phieukhamservice.GetAllPhieuKhamByBenhNhanIDANDDate(bn.getId());
+			dsphieukham= phieukhamDao.GetAllPhieuKhamByBenhNhanIDANDDate(bn.getId());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -186,7 +182,7 @@ public class MyController {
 
 		List<ChiTietDonThuoc> dschitiet = new ArrayList<ChiTietDonThuoc>();
 		try {
-			dschitiet = chitietdonthuocservice.GetAllChiTietDonThuocByBenhNhan(bn.getId());
+			dschitiet = chitietdonthuocDao.GetAllChiTietDonThuocByBenhNhan(bn.getId());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -209,17 +205,17 @@ public class MyController {
 			@RequestParam("ngay_sinh") String ngaysinh, RedirectAttributes redirectAttributes) throws IOException {
 		List<Role> listrole=new ArrayList<Role>();
 		TaiKhoan tkExist = null;
-		tkExist = taikhoanservice.GetOneTaiKhoan(taikhoan.getUsername());
+		tkExist = taikhoanDao.GetOneTaiKhoan(taikhoan.getUsername());
 		if (tkExist.getUsername() != null) {
 			redirectAttributes.addFlashAttribute("thatbai", "Đăng ký thất bại!- Trùng username");
 			return "index";
 		}
-		listrole= taikhoanservice.GetAllRole();
+		listrole= taikhoanDao.GetAllRole();
 		for(int i=0;i<listrole.size();i++)
 			if(listrole.get(i).getName().equals("Bệnh Nhân"))
 				taikhoan.setRole(listrole.get(i));
 		taikhoan.setPassword("123456");
-		int ketquaAddTK = taikhoanservice.POSTRequest(taikhoan);
+		int ketquaAddTK = taikhoanDao.POSTRequest(taikhoan);
 		if (ketquaAddTK == 200) {
 			benhNhan.setTaiKhoan(taikhoan);
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -230,7 +226,7 @@ public class MyController {
 				e.printStackTrace();
 			}
 			benhNhan.setNgaySinh(date);
-			int ketquaPOST = benhnhanservice.POSTBenhNhan(benhNhan);
+			int ketquaPOST = benhnhanDao.POSTBenhNhan(benhNhan);
 			if (ketquaPOST == 200) {
 				BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 				taikhoan.setPassword(encoder.encode(taikhoan.getPassword()));
@@ -238,7 +234,7 @@ public class MyController {
 				return "redirect:/dang-nhap";
 			} else {
 				redirectAttributes.addFlashAttribute("thatbai", "Đăng ký thất bại!");
-				int ketqua = taikhoanservice.DeleteTaiKhoan(taikhoan.getUsername());
+				int ketqua = taikhoanDao.DeleteTaiKhoan(taikhoan.getUsername());
 				return "redirect:/dang-ky";
 
 			}
@@ -252,7 +248,7 @@ public class MyController {
 			throws IOException {
 
 		System.out.println("User name :" + taikhoan.getUsername());
-		TaiKhoan tkExist = taikhoanservice.GetOneTaiKhoan(taikhoan.getUsername());
+		TaiKhoan tkExist = taikhoanDao.GetOneTaiKhoan(taikhoan.getUsername());
 		if (taikhoan.getUsername() != null) {
 			if (tkExist.getPassword().equals(taikhoan.getPassword()))
 				return "redirect:/index";
@@ -278,15 +274,15 @@ public class MyController {
 	@GetMapping("/dat-lich")
 	public String hienThiDatLich(Model model, Principal principal) throws IOException {
 
-		TaiKhoan user = taikhoanservice.GetOneTaiKhoan(principal.getName());
+		TaiKhoan user = taikhoanDao.GetOneTaiKhoan(principal.getName());
 		if (user.getUsername() == null) {
 			return "redirect:/dang-nhap";
 		}
-		BenhNhan benhNhan = benhnhanservice.GetOneBenhNhanByUser(principal.getName());
+		BenhNhan benhNhan = benhnhanDao.GetOneBenhNhanByUser(principal.getName());
 		LichHen lichHen = new LichHen();
 		lichHen.setBenhNhan(benhNhan);
 		model.addAttribute("lichHen", lichHen);
-		NhanVien nhanVien = nhanvienservice.GetOneNhanVien((long) (2));
+		NhanVien nhanVien = nhanvienDao.GetOneNhanVien((long) (2));
 		System.out.println("User name :" + nhanVien.getTen());
 		return "dat-lich";
 	}
@@ -295,11 +291,11 @@ public class MyController {
 	public String datLich(@ModelAttribute("lichHen") LichHen lichHen, Principal principal,
 			@RequestParam(value = "thoigiankham", required = false) String thoigiankham,
 			RedirectAttributes redirectAttributes) throws IOException {
-		TaiKhoan user = taikhoanservice.GetOneTaiKhoan(principal.getName());
+		TaiKhoan user = taikhoanDao.GetOneTaiKhoan(principal.getName());
 		if (user.getUsername() == null) {
 			return "redirect:/dang-nhap";
 		}
-		BenhNhan benhNhan = benhnhanservice.GetOneBenhNhanByUser(principal.getName());
+		BenhNhan benhNhan = benhnhanDao.GetOneBenhNhanByUser(principal.getName());
 
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -311,13 +307,13 @@ public class MyController {
 		}
 		// cần sửa lại mã nhân viên với mã bẹnh nhân
 		LichHen lh = null;
-		lh = lichhenservice.GetLichHenBenhNhan(lichhenservice.doichuoitungay(date), benhNhan.getId());
+		lh = lichhenDao.GetLichHenBenhNhan(lichhenDao.doichuoitungay(date), benhNhan.getId());
 		lichHen.setBenhNhan(benhNhan);
 		lichHen.setThoiGian(date);
 		lichHen.setHinhThuc(true);
 		lichHen.setTrangThai("3");
 		if (lh == null) {
-			int ketqua = lichhenservice.POSTLichHen(lichHen);
+			int ketqua = lichhenDao.POSTLichHen(lichHen);
 
 			if (ketqua == 200) {
 
@@ -332,14 +328,14 @@ public class MyController {
 						String content = "<b>Xin chào " + benhNhan.getTen() + "</b> <br>";
 						content += "Chúng tôi đã nhận được lịch hẹn trước của bạn tại phòng khám với các thông tin như sau : <br>";
 						content += "Họ và tên :" + benhNhan.getTen() + "<br>";
-						content += "Ngày sinh : " + benhnhanservice.doichuoitungay(benhNhan.getNgaySinh()) + "<br>";
+						content += "Ngày sinh : " + benhnhanDao.doichuoitungay(benhNhan.getNgaySinh()) + "<br>";
 						String gioitinh = "";
 						if (benhNhan.isGioiTinh())
 							gioitinh = "Nam";
 						else
 							gioitinh = "Nữ";
 						content += "Giới tính : " + gioitinh + "<br>";
-						content += "Vào lúc : " + lichhenservice.doichuoitungay(lichHen.getThoiGian()) + "<br>";
+						content += "Vào lúc : " + lichhenDao.doichuoitungay(lichHen.getThoiGian()) + "<br>";
 						
 						content += "Vui lòng có mặt tại phòng khám để nhận được dịch vụ tốt nhất!" + "<br>";
 						content += "<br>";
@@ -367,12 +363,12 @@ public class MyController {
 	public String update(@ModelAttribute("benhNhan") BenhNhan benhNhan,Principal principal,
 			 RedirectAttributes redirectAttributes) throws IOException {
 			BenhNhan bn = new BenhNhan();
-			bn=benhnhanservice.GetOneBenhNhanByUser(principal.getName());
+			bn=benhnhanDao.GetOneBenhNhanByUser(principal.getName());
 		
 			benhNhan.setId(bn.getId());
 			benhNhan.setTaiKhoan(bn.getTaiKhoan());
 			benhNhan.setNgaySinh(bn.getNgaySinh());
-			int ketquaPUT = benhnhanservice.PUTBenhNhan(benhNhan);
+			int ketquaPUT = benhnhanDao.PUTBenhNhan(benhNhan);
 			if (ketquaPUT == 200) {
 				
 				redirectAttributes.addFlashAttribute("thanhcong", "Cập nhật thành công!");

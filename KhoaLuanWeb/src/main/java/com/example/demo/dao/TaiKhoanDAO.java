@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.dao;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import com.google.gson.JsonParser;
 import com.example.demo.enity.Role;
 import com.example.demo.enity.TaiKhoan;
 @Repository
-public class TaiKhoanService {
+public class TaiKhoanDAO {
 	
 	static String URL="http://localhost:5001";
 	public  String GET_ALL_TAI_KHOAN=URL+"/taikhoan/getall";

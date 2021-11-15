@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.dao;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
 @Repository
-public class LichHenService {
+public class LichHenDAO {
 	
 	static String URL="http://localhost:5001";
 	

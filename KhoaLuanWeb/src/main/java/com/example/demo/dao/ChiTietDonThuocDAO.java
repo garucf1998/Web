@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.dao;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import com.example.demo.enity.ChiTietDonThuoc;
 import com.example.demo.enity.DonThuoc;
 import com.example.demo.enity.Thuoc;
 @Repository
-public class ChiTietDonThuocService {
+public class ChiTietDonThuocDAO {
 
 	static String URL="http://localhost:5001";
 	
